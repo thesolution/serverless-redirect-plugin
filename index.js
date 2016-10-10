@@ -27,11 +27,16 @@ class RedirectPlugin {
   addIntegrationResponse(properties) {
       let responses = properties.Integration.IntegrationResponses;
       let redirectResponse = { StatusCode:302 };
+      let found = false;
       responses.forEach(r => {
         if (r.StatusCode == 302) {
           redirectResponse = r;
+          found = true;
         }
       });
+      if (!found) {
+        properties.Integration.IntegrationResponses.push(redirectResponse);
+      }
       redirectResponse.SelectionPattern = '.*http[s]{0,1}://.*';
       redirectResponse.ResponseParameters = redirectResponse.ResponseParameters || {};
       redirectResponse.ResponseParameters['method.response.header.Location'] = 'integration.response.body.errorMessage';
